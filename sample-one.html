@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" type="text/css" href="https://static.neshan.org/api/web/v1/openlayers/v4.6.5.css">
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+	        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+	<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+	<script type="text/javascript" src="https://static.neshan.org/api/web/v1/openlayers/v4.6.5.js?callback=initMyMap"
+	        async></script>
+</head>
+<body style="padding:0;margin: 0">
+
+<div id="neshan_map_center_marker" class="ol-unselectable"></div>
+<div id="neshan_map"></div>
+
+<script type="text/javascript">
+	var _map, markerFeatures = [];
+
+	function initMyMap() {
+		_map = new ol.Map({
+			target: 'neshan_map',
+			key: 'e086e278093e00c4043f8ab29ede9f582e7659e4',
+			view: new ol.View({
+				center: ol.proj.fromLonLat([59.6167549, 36.2604623]),
+				zoom: 14
+			})
+		});
+		_map.setMapType('neshan');
+
+//		_map.on('click', function (evt) {
+//			update();
+//		});
+	}
+
+	function setLocation() {
+		var center, result, key, zoom;
+
+		center = ol.proj.toLonLat(_map.getView().getCenter());
+
+		$.ajax({
+			url: 'https://nominatim.openstreetmap.org/reverse',
+			method: 'GET',
+			data: {
+				format: "json",
+				lat: center[1],
+				lon: center[0],
+				limit: 1,
+				"accept-language": "fa"
+			}
+		}).done(function (res) {
+			alert(res.display_name)
+		}).fail(function () {
+			alert("error");
+		});
+
+	}
+
+	$(document).ready(function () {
+		$('#neshan_map_center_marker').click(function () {
+			setLocation();
+		});
+
+		setTimeout(function () {
+			$("div [style*='position: absolute; bottom: 8px; left: 10px; color: rgb(119, 119, 119); text-align: left;']").css('display', 'none')
+		}, 1000)
+
+	})
+</script>
+</body>
+</html>
+<style>
+	#neshan_map_center_marker {
+		width: 22px;
+		height: 28px;
+		background: url("https://developer.neshan.org/tools/v1/static-map-maker/images/marker-1.png") center center no-repeat;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		margin: -14px auto auto -11px;
+		z-index: 100;
+	}
+
+	#neshan_map {
+		position: relative;
+		width: 100%;
+		height: 100vh;
+		background: #eee;
+		border: 0px solid #aaa;
+	}
+</style>
